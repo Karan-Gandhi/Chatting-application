@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { auth } from "../services/firebase";
+import Button, { ButtonType } from "../components/Button";
+import { auth } from "../util/firebase";
 
 // const SplashScreen = (props: { loadingAction: Promise<() => JSX.Element>; WrappedComponent: () => JSX.Element; loadingCompleted?: () => any }) => {
 // 	const [isLoading, setLoading] = useState<boolean>(true);
@@ -30,7 +31,11 @@ const SplashScreen = () => {
 		console.log(auth);
 	}, []);
 
-	return <div>loading</div>;
+	return (
+		<div>
+			<Button onClick={() => {}} label="Hello world" type={ButtonType.Contained} />
+		</div>
+	);
 };
 
 export default SplashScreen;

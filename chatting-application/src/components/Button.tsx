@@ -1,13 +1,37 @@
-import React, { MouseEventHandler } from "react";
+import React from "react";
+import "../styles/Buttons.css";
 
-const Button = (props: { name: string; onClick?: (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void }) => {
+export interface ButtonProps {
+	label: string;
+	type: ButtonType;
+	onClick: () => void;
+}
+
+export enum ButtonType {
+	Contained,
+	Outline,
+	Text,
+}
+
+const Button = (props: ButtonProps) => {
 	return (
 		<button
-			onClick={event => {
-				if (props.onClick) props.onClick(event);
-			}}
+			onClick={props.onClick}
+			className={
+				"button " +
+				(() => {
+					switch (props.type) {
+						case ButtonType.Contained:
+							return "contained-button";
+						case ButtonType.Outline:
+							return "outline-button";
+						case ButtonType.Text:
+							return "text-button";
+					}
+				})()
+			}
 		>
-			{props.name}
+			{props.label}
 		</button>
 	);
 };
