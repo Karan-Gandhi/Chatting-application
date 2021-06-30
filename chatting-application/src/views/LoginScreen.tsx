@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Button, Grid, Box, TextField, InputAdornment, IconButton } from "@material-ui/core";
+import { Button, Grid, Box, TextField, InputAdornment, IconButton, Grow, Fade } from "@material-ui/core";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import firebase, { auth } from "../util/firebase";
+import { useSnackbar } from "notistack";
 
 const LoginScreen = () => {
 	const [email, setEmail] = useState<string>("");
@@ -10,6 +11,8 @@ const LoginScreen = () => {
 	const [emailError, setEmailError] = useState<boolean>(false);
 	const [emailErrorText, setEmailErrorText] = useState<string>("");
 	const [passwordError, setPasswordError] = useState<boolean>(false);
+
+	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
 	useEffect(() => {
 		// TODO: check if the user is logged in
@@ -28,7 +31,14 @@ const LoginScreen = () => {
 					setEmailErrorText(error.message);
 					setEmailError(true);
 				} else {
-					// create a snackbar and display the error message
+					enqueueSnackbar("Invalid email or password", {
+						variant: "default",
+						action: key => (
+							<Button variant="text" style={{ color: "white" }} onClick={() => closeSnackbar(key)}>
+								close
+							</Button>
+						),
+					});
 				}
 			});
 	};
