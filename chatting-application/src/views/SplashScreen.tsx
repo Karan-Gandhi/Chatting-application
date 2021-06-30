@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Button, { ButtonType } from "../components/Button";
+import { Button, Grid, Box, TextField, InputAdornment, IconButton } from "@material-ui/core";
 import { auth } from "../util/firebase";
+import { Visibility, VisibilityOff } from "@material-ui/icons";
 
 // const SplashScreen = (props: { loadingAction: Promise<() => JSX.Element>; WrappedComponent: () => JSX.Element; loadingCompleted?: () => any }) => {
 // 	const [isLoading, setLoading] = useState<boolean>(true);
@@ -25,17 +26,15 @@ const SplashScreen = () => {
 	const [isLoading, setLoading] = useState<boolean>(true);
 	const [ElementToReturn, setElementToReturn] = useState<JSX.Element>();
 
+	const [showPassword, setShowPassword] = useState<boolean>(false);
+
 	useEffect(() => {
 		// do some authentication stuff
 		const success: boolean = false;
 		console.log(auth);
 	}, []);
 
-	return (
-		<div>
-			<Button onClick={() => {}} label="Hello world" type={ButtonType.Contained} />
-		</div>
-	);
+	return <div>Loading</div>;
 };
 
 export default SplashScreen;

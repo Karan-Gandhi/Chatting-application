@@ -1,9 +1,6 @@
-import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
+import "./styles/Theme.css";
 import Routes from "./Routes";
-import SplashScreen from "./views/SplashScreen";
-import { Redirect } from "react-router-dom";
 
 ReactDOM.render(
 	<Routes />,

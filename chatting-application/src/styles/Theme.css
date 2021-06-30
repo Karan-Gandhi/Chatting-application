@@ -1,11 +1,21 @@
-:root {
-	--primary-color: "#283593";
-	--primary-color-light: "#5f5fc4";
-	--primary-color-dark: "#001064";
-	--secondary-color: "#f44336";
-	--secondary-color-light: "#ff7961";
-	--secondary-color-dark: "#ba000d";
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 
-	--primary-text-color: "#ffffff";
-	--secondary-text-color: "#000000";
+body {
+	margin: 0;
+}
+
+:root {
+	--primary-color: #283593;
+	--primary-color-light: #5f5fc4;
+	--primary-color-dark: #001064;
+	--secondary-color: #5c6bc0;
+	--secondary-color-light: #5c6bc0;
+	--secondary-color-dark: #26418f;
+
+	--primary-text-color: #ffffff;
+	--secondary-text-color: #000000;
+}
+
+* {
+	font-family: Roboto, sans-serif;
 }
