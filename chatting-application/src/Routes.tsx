@@ -1,9 +1,6 @@
-import React from "react";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
-import App from "./App";
 import Home from "./home";
 import LoginScreen from "./views/LoginScreen";
-import SplashScreen from "./views/SplashScreen";
 
 const Routes = () => {
 	return (

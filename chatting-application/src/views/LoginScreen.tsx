@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Button, Grid, Box, TextField, InputAdornment, IconButton } from "@material-ui/core";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
+import firebase, { auth } from "../util/firebase";
 
 const LoginScreen = () => {
-	const [username, setUsername] = useState<string>("");
+	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
 	const [showPassword, setShowPassword] = useState<boolean>(false);
-	const [usernameError, setUsernameError] = useState<boolean>(false);
+	const [emailError, setEmailError] = useState<boolean>(false);
+	const [emailErrorText, setEmailErrorText] = useState<string>("");
 	const [passwordError, setPasswordError] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -14,10 +16,21 @@ const LoginScreen = () => {
 	}, []);
 
 	const handleLogin = () => {
-		// TODO: try and login with the email and password
-		if (username.length === 0 || password.length === 0) return;
+		if (email.length === 0 || password.length === 0) return;
 
 		// authenticate
+		auth.signInWithEmailAndPassword(email, password)
+			.then((credentials: firebase.auth.UserCredential) => {
+				console.log(credentials);
+			})
+			.catch((error: firebase.auth.AuthError) => {
+				if (!error.message.includes("password") && error.message.includes("email")) {
+					setEmailErrorText(error.message);
+					setEmailError(true);
+				} else {
+					// create a snackbar and display the error message
+				}
+			});
 	};
 
 	return (
@@ -31,17 +44,20 @@ const LoginScreen = () => {
 						<br />
 						<Grid item>
 							<TextField
-								{...(usernameError ? { error: true } : {})}
-								helperText={usernameError ? "Please provide a username" : ""}
+								{...(emailError ? { error: true } : {})}
+								helperText={emailError ? emailErrorText : ""}
 								variant="outlined"
-								label="Username"
+								label="Email"
+								type="Email"
 								fullWidth
 								required
 								onChange={e => {
-									const _username: string = e.target.value;
-									setUsername(_username);
-									if (_username.length === 0 && !usernameError) setUsernameError(true);
-									else if (_username.length !== 0 && usernameError) setUsernameError(false);
+									const _email: string = e.target.value;
+									setEmail(_email);
+									if (_email.length === 0 && !emailError) {
+										setEmailError(true);
+										setEmailErrorText("Please provide a email");
+									} else if (_email.length !== 0 && emailError) setEmailError(false);
 								}}
 							/>
 						</Grid>
