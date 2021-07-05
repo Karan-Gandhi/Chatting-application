@@ -2,12 +2,7 @@ import { useState } from "react";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { TextField, InputAdornment, IconButton } from "@material-ui/core";
 
-interface PasswordTextFieldProps {
-	errorText: string;
-	error: boolean;
-	onChange?: (e: any) => void;
-	onKeyPress?: (e: any) => void;
-}
+import PasswordTextFieldProps from "../util/PasswordTextFieldProps";
 
 const PasswordTextField = (props: PasswordTextFieldProps) => {
 	const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -15,7 +10,7 @@ const PasswordTextField = (props: PasswordTextFieldProps) => {
 	return (
 		<TextField
 			onChange={props.onChange}
-			onKeyPress={props.onKeyPress}
+			onKeyPress={e => (e.key === "Enter" && props.onSubmit ? props.onSubmit(e) : null)}
 			error={props.error}
 			helperText={props.errorText}
 			variant="outlined"

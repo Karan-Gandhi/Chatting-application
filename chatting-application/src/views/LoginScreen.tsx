@@ -6,11 +6,11 @@ import { Redirect } from "react-router-dom";
 import getSnackbarOptions from "../util/getSnackbarOptions";
 import firebase, { auth } from "../services/firebase";
 import PasswordTextField from "../components/PasswordTextField";
+import { useNonInitialEffect } from "../util/useNonInitialEffect";
 
 const LoginScreen = () => {
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
-	const [showPassword, setShowPassword] = useState<boolean>(false);
 	const [emailError, setEmailError] = useState<boolean>(false);
 	const [emailErrorText, setEmailErrorText] = useState<string>("");
 	const [passwordError, setPasswordError] = useState<boolean>(false);
@@ -31,6 +31,18 @@ const LoginScreen = () => {
 			});
 	};
 
+	useNonInitialEffect(() => {
+		if (email.length === 0 && !emailError) {
+			setEmailError(true);
+			setEmailErrorText("Please provide a email");
+		} else if (email.length !== 0 && emailError) setEmailError(false);
+	}, [email]);
+
+	useNonInitialEffect(() => {
+		if (password.length === 0 && !passwordError) setPasswordError(true);
+		else if (password.length !== 0 && passwordError) setPasswordError(false);
+	}, [password]);
+
 	useEffect(() => auth.onAuthStateChanged(user => (user ? setUserLoggedIn(true) : null)), []);
 	if (userLoggedIn) return <Redirect to="/home"></Redirect>;
 
@@ -45,33 +57,21 @@ const LoginScreen = () => {
 						<br />
 						<Grid item>
 							<TextField
-								{...(emailError ? { error: true } : {})}
+								fullWidth
+								required
+								error={emailError}
 								helperText={emailError ? emailErrorText : ""}
 								variant="outlined"
 								label="Email"
 								type="Email"
-								fullWidth
-								required
-								onChange={e => {
-									const _email: string = e.target.value;
-									setEmail(_email);
-									if (_email.length === 0 && !emailError) {
-										setEmailError(true);
-										setEmailErrorText("Please provide a email");
-									} else if (_email.length !== 0 && emailError) setEmailError(false);
-								}}
+								onChange={e => setEmail(e.target.value)}
 								onKeyPress={e => (e.key === "Enter" ? handleLogin() : null)}
 							/>
 						</Grid>
 						<Grid item>
 							<PasswordTextField
-								onChange={e => {
-									const _password: string = e.target.value;
-									setPassword(_password);
-									if (_password.length === 0 && !passwordError) setPasswordError(true);
-									else if (_password.length !== 0 && passwordError) setPasswordError(false);
-								}}
-								onKeyPress={e => (e.key === "Enter" ? handleLogin() : null)}
+								onChange={e => setPassword(e.target.value)}
+								onSubmit={handleLogin}
 								errorText={passwordError ? "Please provide a password" : ""}
 								error={passwordError}
 							/>
