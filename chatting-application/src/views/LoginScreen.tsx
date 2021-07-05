@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
-import { Button, Grid, Box, TextField, InputAdornment, IconButton, Grow, Fade } from "@material-ui/core";
-import { Visibility, VisibilityOff } from "@material-ui/icons";
-import firebase, { auth } from "../util/firebase";
+import { Button, Grid, Box, TextField } from "@material-ui/core";
 import { useSnackbar } from "notistack";
+import { Redirect } from "react-router-dom";
+
+import getSnackbarOptions from "../util/getSnackbarOptions";
+import firebase, { auth } from "../services/firebase";
+import PasswordTextField from "../components/PasswordTextField";
 
 const LoginScreen = () => {
 	const [email, setEmail] = useState<string>("");
@@ -11,37 +14,25 @@ const LoginScreen = () => {
 	const [emailError, setEmailError] = useState<boolean>(false);
 	const [emailErrorText, setEmailErrorText] = useState<string>("");
 	const [passwordError, setPasswordError] = useState<boolean>(false);
+	const [userLoggedIn, setUserLoggedIn] = useState<boolean>(false);
 
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-
-	useEffect(() => {
-		// TODO: check if the user is logged in
-	}, []);
 
 	const handleLogin = () => {
 		if (email.length === 0 || password.length === 0) return;
 
-		// authenticate
 		auth.signInWithEmailAndPassword(email, password)
-			.then((credentials: firebase.auth.UserCredential) => {
-				console.log(credentials);
-			})
+			.then(() => setUserLoggedIn(true))
 			.catch((error: firebase.auth.AuthError) => {
 				if (!error.message.includes("password") && error.message.includes("email")) {
 					setEmailErrorText(error.message);
 					setEmailError(true);
-				} else {
-					enqueueSnackbar("Invalid email or password", {
-						variant: "default",
-						action: key => (
-							<Button variant="text" style={{ color: "white" }} onClick={() => closeSnackbar(key)}>
-								close
-							</Button>
-						),
-					});
-				}
+				} else enqueueSnackbar("Invalid email or password", getSnackbarOptions(closeSnackbar));
 			});
 	};
+
+	useEffect(() => auth.onAuthStateChanged(user => (user ? setUserLoggedIn(true) : null)), []);
+	if (userLoggedIn) return <Redirect to="/home"></Redirect>;
 
 	return (
 		<div>
@@ -69,32 +60,20 @@ const LoginScreen = () => {
 										setEmailErrorText("Please provide a email");
 									} else if (_email.length !== 0 && emailError) setEmailError(false);
 								}}
+								onKeyPress={e => (e.key === "Enter" ? handleLogin() : null)}
 							/>
 						</Grid>
 						<Grid item>
-							<TextField
+							<PasswordTextField
 								onChange={e => {
 									const _password: string = e.target.value;
 									setPassword(_password);
 									if (_password.length === 0 && !passwordError) setPasswordError(true);
 									else if (_password.length !== 0 && passwordError) setPasswordError(false);
 								}}
-								{...(passwordError ? { error: true } : {})}
-								helperText={passwordError ? "Please provide a password" : ""}
-								variant="outlined"
-								label="Password"
-								type={showPassword ? "text" : "password"}
-								fullWidth
-								required
-								InputProps={{
-									endAdornment: (
-										<InputAdornment position="end">
-											<IconButton aria-label="toggle password visibility" onClick={() => setShowPassword(!showPassword)} edge="end">
-												{showPassword ? <Visibility /> : <VisibilityOff />}
-											</IconButton>
-										</InputAdornment>
-									),
-								}}
+								onKeyPress={e => (e.key === "Enter" ? handleLogin() : null)}
+								errorText={passwordError ? "Please provide a password" : ""}
+								error={passwordError}
 							/>
 						</Grid>
 						<Grid item>
