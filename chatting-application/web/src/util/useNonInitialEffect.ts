@@ -1,5 +1,6 @@
 import { useEffect, DependencyList, useRef } from "react";
 
+// eslint-disable-next-line
 export const useNonInitialEffect = (effect: () => void, deps?: DependencyList) => {
 	const initialRender = useRef(true);
 

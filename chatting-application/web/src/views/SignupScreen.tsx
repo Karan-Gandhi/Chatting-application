@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Grid, Link, TextField } from "@material-ui/core";
+import { Box, Button, Grid, Link } from "@material-ui/core";
 import { useSnackbar } from "notistack";
 import { Redirect } from "react-router-dom";
 
@@ -7,21 +7,25 @@ import { useNonInitialEffect } from "../util/useNonInitialEffect";
 import PasswordTextField from "../components/PasswordTextField";
 import firebase, { auth } from "../services/firebase";
 import getSnackbarOptions from "../util/getSnackbarOptions";
+import NormalTextField from "../components/NormalTextField";
 
 const SignupScreen = () => {
+	const [name, setName] = useState<string>("");
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
+	const [confirmPassword, setConfirmPassword] = useState<string>("");
+
 	const [emailError, setEmailError] = useState<boolean>(false);
 	const [emailErrorText, setEmailErrorText] = useState<string>("");
-	const [passwordError, setPasswordError] = useState<boolean>(false);
 	const [userLoggedIn, setUserLoggedIn] = useState<boolean>(false);
 
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-	const handleLogin = () => {
+	const handleSignup = () => {
 		if (email.length === 0 || password.length === 0) return;
+		if (password !== confirmPassword) enqueueSnackbar("The given passwords don't match", getSnackbarOptions(closeSnackbar));
 
-		auth.signInWithEmailAndPassword(email, password)
+		auth.createUserWithEmailAndPassword(email, password)
 			.then(() => setUserLoggedIn(true))
 			.catch((error: firebase.auth.AuthError) => {
 				if (!error.message.includes("password") && error.message.includes("email")) {
@@ -31,19 +35,9 @@ const SignupScreen = () => {
 			});
 	};
 
-	useNonInitialEffect(() => {
-		if (email.length === 0 && !emailError) {
-			setEmailError(true);
-			setEmailErrorText("Please provide a email");
-		} else if (email.length !== 0 && emailError) setEmailError(false);
-	}, [email]);
-
-	useNonInitialEffect(() => {
-		if (password.length === 0 && !passwordError) setPasswordError(true);
-		else if (password.length !== 0 && passwordError) setPasswordError(false);
-	}, [password]);
-
+	useNonInitialEffect(() => setEmailError(false), [email]);
 	useEffect(() => auth.onAuthStateChanged(user => (user ? setUserLoggedIn(true) : null)), []);
+
 	if (userLoggedIn) return <Redirect to="/home"></Redirect>;
 
 	return (
@@ -56,44 +50,32 @@ const SignupScreen = () => {
 						</Grid>
 						<br />
 						<Grid item>
-							<TextField
-								fullWidth
-								required
-								error={emailError}
-								helperText={emailError ? emailErrorText : ""}
-								variant="outlined"
-								label="Email"
-								type="Email"
-								onChange={e => setEmail(e.target.value)}
-								onKeyPress={e => (e.key === "Enter" ? handleLogin() : null)}
-							/>
+							<NormalTextField label="Name" type="Email" onChange={e => setName(e.target.value)} onSubmit={handleSignup} />
 						</Grid>
-						{/* <Grid item>
-							<PasswordTextField
-								label="Passowrd"
-								onChange={e => setPassword(e.target.value)}
-								onSubmit={handleLogin}
-								errorText={passwordError ? "Please provide a password" : ""}
-								error={passwordError}
+						<Grid item>
+							<NormalTextField
+								label="Email"
+								type="text"
+								error={emailError}
+								errorText={emailErrorText}
+								onChange={e => setEmail(e.target.value)}
+								onSubmit={handleSignup}
 							/>
 						</Grid>
 						<Grid item>
-							<PasswordTextField
-								label="Confirm Passowrd"
-								onChange={e => setPassword(e.target.value)}
-								onSubmit={handleLogin}
-								errorText={passwordError ? "Please provide a password" : ""}
-								error={passwordError}
-							/>
-						</Grid> */}
+							<PasswordTextField label="Password" onChange={e => setPassword(e.target.value)} onSubmit={handleSignup} />
+						</Grid>
+						<Grid item>
+							<PasswordTextField label="Confirm password" onChange={e => setConfirmPassword(e.target.value)} onSubmit={handleSignup} />
+						</Grid>
 						<Grid container justify="flex-end" alignItems="flex-end">
 							<span style={{ marginRight: "16px" }}>
-								Don't have a account? <Link href="/signup">Sign up!</Link>
+								Already have an account? <Link href="/signup">Log in!</Link>
 							</span>
 						</Grid>
 						<Grid item>
-							<Button variant="contained" color="primary" disableElevation fullWidth onClick={handleLogin}>
-								Login
+							<Button variant="contained" color="primary" disableElevation fullWidth onClick={handleSignup}>
+								Sign up
 							</Button>
 						</Grid>
 					</Grid>

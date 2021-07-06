@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button, Grid, Box, TextField, Link } from "@material-ui/core";
+import { Button, Grid, Box, Link } from "@material-ui/core";
 import { useSnackbar } from "notistack";
 import { Redirect } from "react-router-dom";
 
@@ -60,7 +60,7 @@ const LoginScreen = () => {
 						</Grid>
 						<Grid container justify="flex-end" alignItems="flex-end">
 							<span style={{ marginRight: "16px" }}>
-								Don't have a account? <Link href="/signup">Sign up!</Link>
+								Don't have an account? <Link href="/signup">Sign up!</Link>
 							</span>
 						</Grid>
 						<Grid item>
