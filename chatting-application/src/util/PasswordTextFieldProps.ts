@@ -1,6 +1,5 @@
 export default interface PasswordTextFieldProps {
-	errorText: string;
-	error: boolean;
+	label: string;
 	onChange?: (e: any) => void;
 	onSubmit?: (e: any) => void;
 }

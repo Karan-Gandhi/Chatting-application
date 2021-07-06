@@ -1,19 +1,19 @@
-import { useState, useEffect } from "react";
-import { Button, Grid, Box, TextField, Link } from "@material-ui/core";
+import { useEffect, useState } from "react";
+import { Box, Button, Grid, Link, TextField } from "@material-ui/core";
 import { useSnackbar } from "notistack";
 import { Redirect } from "react-router-dom";
 
-import getSnackbarOptions from "../util/getSnackbarOptions";
-import firebase, { auth } from "../services/firebase";
-import PasswordTextField from "../components/PasswordTextField";
 import { useNonInitialEffect } from "../util/useNonInitialEffect";
-import NormalTextField from "../components/NormalTextField";
+import PasswordTextField from "../components/PasswordTextField";
+import firebase, { auth } from "../services/firebase";
+import getSnackbarOptions from "../util/getSnackbarOptions";
 
-const LoginScreen = () => {
+const SignupScreen = () => {
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
 	const [emailError, setEmailError] = useState<boolean>(false);
 	const [emailErrorText, setEmailErrorText] = useState<string>("");
+	const [passwordError, setPasswordError] = useState<boolean>(false);
 	const [userLoggedIn, setUserLoggedIn] = useState<boolean>(false);
 
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -31,9 +31,19 @@ const LoginScreen = () => {
 			});
 	};
 
-	useNonInitialEffect(() => setEmailError(false), [email]);
-	useEffect(() => auth.onAuthStateChanged(user => (user ? setUserLoggedIn(true) : null)), []);
+	useNonInitialEffect(() => {
+		if (email.length === 0 && !emailError) {
+			setEmailError(true);
+			setEmailErrorText("Please provide a email");
+		} else if (email.length !== 0 && emailError) setEmailError(false);
+	}, [email]);
 
+	useNonInitialEffect(() => {
+		if (password.length === 0 && !passwordError) setPasswordError(true);
+		else if (password.length !== 0 && passwordError) setPasswordError(false);
+	}, [password]);
+
+	useEffect(() => auth.onAuthStateChanged(user => (user ? setUserLoggedIn(true) : null)), []);
 	if (userLoggedIn) return <Redirect to="/home"></Redirect>;
 
 	return (
@@ -42,22 +52,40 @@ const LoginScreen = () => {
 				<Box minWidth="500px" boxShadow={3} style={{ borderRadius: "8px", backgroundColor: "#fff" }} padding="64px 32px">
 					<Grid container spacing={3} direction="column">
 						<Grid container justify="center">
-							<span style={{ fontSize: "30px" }}>Login</span>
+							<span style={{ fontSize: "30px" }}>Sign up</span>
 						</Grid>
 						<br />
 						<Grid item>
-							<NormalTextField
+							<TextField
+								fullWidth
+								required
+								error={emailError}
+								helperText={emailError ? emailErrorText : ""}
+								variant="outlined"
 								label="Email"
 								type="Email"
-								error={emailError}
-								errorText={emailErrorText}
 								onChange={e => setEmail(e.target.value)}
+								onKeyPress={e => (e.key === "Enter" ? handleLogin() : null)}
+							/>
+						</Grid>
+						{/* <Grid item>
+							<PasswordTextField
+								label="Passowrd"
+								onChange={e => setPassword(e.target.value)}
 								onSubmit={handleLogin}
+								errorText={passwordError ? "Please provide a password" : ""}
+								error={passwordError}
 							/>
 						</Grid>
 						<Grid item>
-							<PasswordTextField label="Password" onChange={e => setPassword(e.target.value)} onSubmit={handleLogin} />
-						</Grid>
+							<PasswordTextField
+								label="Confirm Passowrd"
+								onChange={e => setPassword(e.target.value)}
+								onSubmit={handleLogin}
+								errorText={passwordError ? "Please provide a password" : ""}
+								error={passwordError}
+							/>
+						</Grid> */}
 						<Grid container justify="flex-end" alignItems="flex-end">
 							<span style={{ marginRight: "16px" }}>
 								Don't have a account? <Link href="/signup">Sign up!</Link>
@@ -75,4 +103,4 @@ const LoginScreen = () => {
 	);
 };
 
-export default LoginScreen;
+export default SignupScreen;
